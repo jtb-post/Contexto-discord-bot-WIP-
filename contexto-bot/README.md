@@ -21,22 +21,23 @@ exact word gets a point, and `/leaderboard` shows the server's top 5.
      choose scopes `bot` and `applications.commands`, and permissions View Channels, Send
      Messages, Embed Links, Read Message History, Add Reactions and Manage Messages. Anyone can
      then add the bot from its profile ("Add App") or with the link.
-2. **Install:**
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate
-   pip install -r requirements.txt
-   python prepare_vectors.py
-   ```
-   `prepare_vectors.py` downloads about 128 MB once.
-3. **Run it:**
-   ```bash
-   python bot.py
-   ```
-   On the first run the bot asks for the token. The token is hidden as you paste it, and the bot
-   saves it to `.env` on this machine. `.env` is git-ignored, so the token never goes into the
-   code. On a hosting service, set the `DISCORD_TOKEN` environment variable instead. Each start
-   also logs an invite link.
+2. **Double-click `Start Contexto.bat`.** That's all there is to it.
+   - The first time, it creates the Python environment, installs the packages, downloads the
+     word list (about 128 MB), then asks for your bot token. Paste the token and press Enter;
+     it stays hidden while you type. It's saved to `.env` on this computer only, and `.env` is
+     git-ignored, so the token never goes into the code.
+   - After that, a double-click just starts the bot. Keep the window open while the bot runs;
+     closing it stops the bot.
+   - If the bot crashes, the launcher restarts it after 10 seconds. If there's a setup problem,
+     like a bad token or Message Content Intent being off, it shows what to fix and waits
+     instead of restarting.
+   - Double-click **`Create Desktop Shortcut.bat`** once to put a "Contexto Bot" icon on your
+     desktop.
+   - You need Python 3.10 or newer. If it's missing, the launcher opens the download page.
+
+   On a Mac, Linux or a hosting service, run `pip install -r requirements.txt`,
+   `python prepare_vectors.py` and `python bot.py`, with the `DISCORD_TOKEN` environment
+   variable set.
 
 ### Terms of Service and Privacy Policy
 

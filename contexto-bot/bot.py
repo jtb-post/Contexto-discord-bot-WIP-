@@ -14,7 +14,7 @@ from pathlib import Path
 
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv, set_key
+from dotenv import dotenv_values, load_dotenv, set_key, unset_key
 
 from contexto.engine import WordSpace
 from contexto.game import DYNAMIC_ITEMS, Contexto, invite_url
@@ -50,10 +50,18 @@ class ContextoBot(commands.Bot):
         log.info("Invite link: %s", invite_url(self.application_id))
 
 
+SETUP_ERROR = 2  # tells Start Contexto.bat to stop and show the message instead of restarting
+
+
+def fail(message: str):
+    print(f"\n{message}", file=sys.stderr)
+    sys.exit(SETUP_ERROR)
+
+
 def ask_for_token() -> str:
     """First-run setup: prompt for the token and keep it in .env on this machine."""
     if not sys.stdin.isatty():
-        sys.exit("No DISCORD_TOKEN set. Set it as an environment variable, or run `python bot.py` in a terminal once.")
+        fail("No DISCORD_TOKEN set. Set it as an environment variable, or run `python bot.py` in a terminal once.")
     print(
         "First-time setup\n"
         "Paste your bot token from https://discord.com/developers/applications -> your app -> Bot -> Reset Token.\n"
@@ -61,7 +69,7 @@ def ask_for_token() -> str:
     )
     token = getpass.getpass("Bot token (hidden): ").strip()
     if token.count(".") != 2:
-        sys.exit("That doesn't look like a bot token. Run again and paste the whole token.")
+        fail("That doesn't look like a bot token. Run again and paste the whole token.")
     ENV_PATH.touch(exist_ok=True)
     set_key(str(ENV_PATH), "DISCORD_TOKEN", token)
     print(f"Saved to {ENV_PATH}")
@@ -71,6 +79,8 @@ def ask_for_token() -> str:
 def main():
     load_dotenv(ENV_PATH)
     discord.utils.setup_logging(level=logging.INFO)
+    # The bot never joins voice, so discord.py's "voice will NOT be supported" warnings are noise.
+    logging.getLogger("discord.client").addFilter(lambda r: "voice will NOT be supported" not in r.getMessage())
     token = os.getenv("DISCORD_TOKEN") or ask_for_token()
     terms_url, privacy_url = os.getenv("TERMS_URL"), os.getenv("PRIVACY_URL")
     if not (terms_url and privacy_url):
@@ -78,16 +88,24 @@ def main():
     try:
         space = WordSpace.load()
     except FileNotFoundError as e:
-        sys.exit(str(e))
+        fail(str(e))
     log.info("Loaded %d words", len(space))
-    store = Store(os.getenv("DATABASE_PATH", "contexto.db"))
+    store = Store(os.getenv("DATABASE_PATH") or ENV_PATH.parent / "contexto.db")
     bot = ContextoBot(space, store, terms_url, privacy_url)
     try:
         bot.run(token, log_handler=None)
     except discord.LoginFailure:
-        sys.exit(
-            "Discord rejected the token. Reset it in the Developer Portal, delete the DISCORD_TOKEN line "
-            f"from {ENV_PATH}, and run again."
+        saved = ENV_PATH.exists() and dotenv_values(ENV_PATH).get("DISCORD_TOKEN") == token
+        if saved:
+            unset_key(str(ENV_PATH), "DISCORD_TOKEN")
+        fail(
+            "Discord rejected the token" + (", so it was removed from .env" if saved else "") + ".\n"
+            "Get a new one (Developer Portal -> Bot -> Reset Token) and start again; you'll be asked for it."
+        )
+    except discord.PrivilegedIntentsRequired:
+        fail(
+            "Message Content Intent is off. Turn it on in the Developer Portal -> your app -> Bot -> "
+            "Privileged Gateway Intents, save, and start again."
         )
 
 

@@ -6,7 +6,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$lnk = $ws.CreateShortcut([IO.Path]::Combine([Environment]::GetFolderPath('Desktop'), 'Contexto Bot.lnk'));" ^
   "$lnk.TargetPath = [IO.Path]::Combine((Get-Location).Path, 'Start Contexto.bat');" ^
   "$lnk.WorkingDirectory = (Get-Location).Path;" ^
-  "$lnk.IconLocation = 'imageres.dll,76';" ^
+  "$lnk.IconLocation = [IO.Path]::Combine((Get-Location).Path, 'assets', 'contexto.ico') + ',0';" ^
   "$lnk.Description = 'Start the Contexto Discord bot';" ^
   "$lnk.Save()"
 if errorlevel 1 (

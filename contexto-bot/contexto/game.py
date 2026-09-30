@@ -185,6 +185,7 @@ class Contexto(commands.Cog):
         self.terms_url = terms_url
         self.privacy_url = privacy_url
         self.secret_pool = load_secret_words(space)
+        log.info("Secret word pool: %d words", len(self.secret_pool))
         self.rounds: dict[int, RoundState] = {}
         self.pending: dict[int, asyncio.Task] = {}
 

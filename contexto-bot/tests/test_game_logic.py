@@ -44,10 +44,15 @@ class EngineTests(unittest.TestCase):
     def test_guess_reply_shows_top_three(self):
         top = [{"word": "sea", "rank": 2}, {"word": "whale", "rank": 97}, {"word": "island", "rank": 240}]
         reply = render.guess_reply(97, 50000, "whale", top, new_best=False)
-        first, second = reply.split("\n")
+        first, *rest = reply.split("\n")
         self.assertIn("**#97**", first)
         self.assertNotIn("NEW BEST", first)
-        self.assertEqual(second, "-# Top 3 · **sea** #2 · **whale** #97 ↑ new · **island** #240")
+        self.assertEqual(rest, [
+            "-# Top 3",
+            "-# 1. **sea** #2",
+            "-# 2. **whale** #97 ↑ new",
+            "-# 3. **island** #240",
+        ])
         self.assertIn("NEW BEST", render.guess_reply(2, 50000, "sea", top, new_best=True))
 
     def test_tiles_do_not_form_flags(self):

@@ -29,13 +29,13 @@ def guess_reply(rank: int, total: int, word: str, top, new_best: bool) -> str:
     line = guess_line(rank, total)
     if new_best:
         line += " · **NEW BEST**"
-    entries = []
-    for r in top:
-        entry = f"**{r['word']}** #{r['rank']:,}"
+    lines = [line, "-# Top 3"]
+    for i, r in enumerate(top, start=1):
+        entry = f"-# {i}. **{r['word']}** #{r['rank']:,}"
         if r["word"] == word:
             entry += " ↑ new"
-        entries.append(entry)
-    return f"{line}\n-# Top 3 · " + " · ".join(entries)
+        lines.append(entry)
+    return "\n".join(lines)
 
 
 def _who(row) -> str:

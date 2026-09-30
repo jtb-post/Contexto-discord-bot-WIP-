@@ -48,6 +48,22 @@ class ContextoBot(commands.Bot):
     async def on_ready(self):
         log.info("Logged in as %s in %d servers", self.user, len(self.guilds))
         log.info("Invite link: %s", invite_url(self.application_id))
+        # The bot ignores every message until a server runs /contexto setup, so say so here.
+        if not self.guilds:
+            log.warning("The bot isn't in any server yet. Open the invite link above to add it.")
+        for guild in self.guilds:
+            self.warn_if_not_set_up(guild)
+
+    async def on_guild_join(self, guild: discord.Guild):
+        log.info("Added to server %s", guild.name)
+        self.warn_if_not_set_up(guild)
+
+    def warn_if_not_set_up(self, guild: discord.Guild):
+        if not self.store.get_guild(guild.id):
+            log.warning(
+                "Not set up in %s yet: run /contexto setup there and pick the game channel. "
+                "Until then the bot ignores messages in that server.", guild.name,
+            )
 
 
 SETUP_ERROR = 2  # tells Start Contexto.bat to stop and show the message instead of restarting

@@ -38,6 +38,19 @@ exact word gets a point, and `/leaderboard` shows the server's top 5.
      desktop.
    - You need Python 3.10 or newer. If it's missing, the launcher opens the download page.
 
+   If you downloaded a .zip, right-click it and choose **Extract All** first. The .bat files
+   don't work when run from inside the .zip.
+
+3. **Add the bot to your server and run `/contexto setup`.** Until someone with Manage Server
+   picks a game channel, the bot is online but ignores every message. The bot window lists any
+   server that still needs setup.
+
+   **Bot online but nothing happens?**
+   - Nobody has run `/contexto setup` in that server yet. Run it and choose the channel.
+   - `/contexto` doesn't show up: the invite needs the `applications.commands` scope (step 1).
+     New commands can take a few minutes to appear. Restarting Discord (Ctrl+R) helps.
+   - Guesses have to go in the channel you chose in setup, one word per message.
+
    On a Mac, Linux or a hosting service, run `pip install -r requirements.txt`,
    `python prepare_vectors.py` and `python bot.py`, with the `DISCORD_TOKEN` environment
    variable set.

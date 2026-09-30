@@ -24,6 +24,20 @@ def guess_line(rank: int, total: int) -> str:
     return f"{BAND_ICON[b]} **#{rank:,}** `{bar(rank, total)}` {b}"
 
 
+def guess_reply(rank: int, total: int, word: str, top, new_best: bool) -> str:
+    """The rank line, plus the round's current top 3 in Discord's small grey subtext."""
+    line = guess_line(rank, total)
+    if new_best:
+        line += " · **NEW BEST**"
+    entries = []
+    for r in top:
+        entry = f"**{r['word']}** #{r['rank']:,}"
+        if r["word"] == word:
+            entry += " ↑ new"
+        entries.append(entry)
+    return f"{line}\n-# Top 3 · " + " · ".join(entries)
+
+
 def _who(row) -> str:
     return "hint" if row["is_hint"] else f"<@{row['user_id']}>"
 

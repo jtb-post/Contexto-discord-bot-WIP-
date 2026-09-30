@@ -384,12 +384,17 @@ class Contexto(commands.Cog):
                 )
                 return
             rank = state.ranking.rank(word)
+            prev_best = self.store.best_rank(state.round_id)
             self.store.add_guess(state.round_id, word, message.author.id, rank, now())
             if rank == 1:
                 await self._announce_win(state, message)
                 return
+            top = self.store.top_guesses(state.round_id, 3)
 
-        await message.reply(render.guess_line(rank, len(self.space)), mention_author=False)
+        new_best = prev_best is not None and rank < prev_best  # the first guess of a round isn't a "best" yet
+        await message.reply(
+            render.guess_reply(rank, len(self.space), word, top, new_best), mention_author=False
+        )
         self._queue_board_refresh(state)
 
     async def _announce_win(self, state: RoundState, message: discord.Message) -> None:

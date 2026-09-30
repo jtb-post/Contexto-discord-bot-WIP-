@@ -21,9 +21,12 @@ exact word gets a point, and `/leaderboard` shows the server's top 5.
      choose scopes `bot` and `applications.commands`, and permissions View Channels, Send
      Messages, Embed Links, Read Message History, Add Reactions and Manage Messages. Anyone can
      then add the bot from its profile ("Add App") or with the link.
+
+     ---Put the URL into any browser to add the bot to the discord.
+
 2. **Double-click `Start Contexto.bat`.** That's all there is to it.
    - The first time, it creates the Python environment, installs the packages, downloads the
-     word list (about 128 MB), then asks for your bot token. Paste the token and press Enter;
+     word list (about 128 MB), then asks for your bot token (in the discord application bot area, click the reset token button, and it will give you it). Paste the token and press Enter;
      it stays hidden while you type. It's saved to `.env` on this computer only, and `.env` is
      git-ignored, so the token never goes into the code.
    - After that, a double-click just starts the bot. Keep the window open while the bot runs;
